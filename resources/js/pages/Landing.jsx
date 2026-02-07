@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import LandingNavbar from "../components/LandingNavbar";
+import Footer from "../components/Footer";
 
 import heroImg from "../images/Hero.png";
 import signupImg from "../images/signup.png";
@@ -42,21 +43,21 @@ export default function Landing() {
                 <Link to="/voter" className="vs-btn vs-btn-primary">
                   Register as Voter
                 </Link>
-                <Link to="/admin" className="vs-btn vs-btn-ghost">
-                  Admin Panel
+                <Link to="/how-it-works" className="vs-btn vs-btn-ghost vs-animate-pulse">
+                  How It Works
                 </Link>
               </div>
 
               <div className="vs-stats">
-                <div className="vs-stat">
+                <div className="vs-stat vs-animate-slide-up vs-delay-100">
                   <div className="vs-stat-value">99.9%</div>
                   <div className="vs-stat-label">Uptime</div>
                 </div>
-                <div className="vs-stat">
+                <div className="vs-stat vs-animate-slide-up vs-delay-200">
                   <div className="vs-stat-value">2x</div>
                   <div className="vs-stat-label">Faster Results</div>
                 </div>
-                <div className="vs-stat">
+                <div className="vs-stat vs-animate-slide-up vs-delay-300">
                   <div className="vs-stat-value">Secure</div>
                   <div className="vs-stat-label">Access Control</div>
                 </div>
@@ -64,12 +65,12 @@ export default function Landing() {
             </div>
 
             <div className="vs-hero-right">
-              <div className="vs-hero-card">
+              <div className="vs-hero-card vs-animate-float">
                 <img src={heroImg} alt="Voting illustration" className="vs-hero-img" />
                 <div className="vs-hero-card-bottom">
                   <div className="vs-mini">
-                    <div className="vs-mini-icon">🗳️</div>
-                    <div>
+                    <div className="vs-mini-icon vs-animate-pulse">🗳️</div>
+                    <div className="vs-animate-slide-up">
                       <div className="vs-mini-title">Live Election</div>
                       <div className="vs-mini-sub">Track status in real-time</div>
                     </div>
@@ -184,11 +185,11 @@ export default function Landing() {
               <p>Start with voter registration or go to admin setup.</p>
             </div>
             <div className="vs-cta-actions">
-              <Link to="/voter" className="vs-btn vs-btn-primary">
+              <Link to="/voter" className="vs-btn vs-btn-primary vs-btn-sm">
                 Get Started
               </Link>
-              <Link to="/admin" className="vs-btn vs-btn-ghost">
-                Admin Setup
+              <Link to="/how-it-works" className="vs-btn vs-btn-ghost vs-btn-sm">
+                How It Works
               </Link>
             </div>
           </div>
@@ -196,40 +197,8 @@ export default function Landing() {
       </section>
 
       {/* FOOTER */}
-      <footer className="vs-footer" id="contact">
-        <div className="container">
-          <div className="vs-footer-grid">
-            <div>
-              <div className="vs-footer-brand">
-                <span className="vs-logo">V</span>
-                <span className="vs-brand-text">
-                  Vote<span>Secure</span>
-                </span>
-              </div>
-              <p className="vs-footer-text">
-                Secure online voting for universities, clubs, and organizations.
-              </p>
-            </div>
-
-            <div>
-              <div className="vs-footer-head">Links</div>
-              <a href="#features" className="vs-footer-link">Features</a>
-              <a href="#how" className="vs-footer-link">How it works</a>
-              <Link to="/admin" className="vs-footer-link">Admin</Link>
-            </div>
-
-            <div>
-              <div className="vs-footer-head">Contact</div>
-              <div className="vs-footer-text">Email: support@votesecure.com</div>
-              <div className="vs-footer-text">Phone: +94 76 678 4978</div>
-            </div>
-          </div>
-
-          <div className="vs-footer-bottom">
-            © {new Date().getFullYear()} VoteSecure
-          </div>
-        </div>
-      </footer>
+      {/* FOOTER */}
+      <Footer />
     </div>
   );
 }

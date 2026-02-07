@@ -1,108 +1,92 @@
-import React, { useState } from "react";
+import React from "react";
+import { Link } from "react-router-dom";
 import LandingNavbar from "../components/LandingNavbar";
-
-const faqs = [
-  {
-    q: "What is VoteSecure?",
-    a: "VoteSecure is an online voting system designed for universities and organizations to conduct secure, transparent, and efficient elections."
-  },
-  {
-    q: "Who can create an election?",
-    a: "Only administrators can create elections, add candidates, open or close elections, and manage election data."
-  },
-  {
-    q: "How does voter registration work?",
-    a: "Voters register using a unique voter ID. This ID is used to ensure each voter can vote only once per election."
-  },
-  {
-    q: "Can I vote more than once?",
-    a: "No. The system checks if a voter ID has already voted in a specific election and blocks duplicate voting automatically."
-  },
-  {
-    q: "What happens if an election is closed?",
-    a: "If an election status is set to 'closed', no new votes are accepted. Attempting to vote will return an error."
-  },
-  {
-    q: "How are votes counted?",
-    a: "Votes are stored securely and counted per candidate. Results are calculated dynamically based on total votes."
-  },
-  {
-    q: "Can I see live results?",
-    a: "Yes. Results can be viewed in real time, including total votes and percentage per candidate."
-  },
-  {
-    q: "How is election integrity ensured?",
-    a: "VoteSecure ensures integrity through voter validation, election status checks, and preventing duplicate votes."
-  },
-  {
-    q: "Can candidates be removed?",
-    a: "Yes. Administrators can delete candidates if needed before or after elections."
-  },
-  {
-    q: "What happens when an election is deleted?",
-    a: "Deleting an election removes the election and its associated candidates and votes permanently."
-  }
-];
+import Footer from "../components/Footer";
 
 export default function Faqs() {
-  const [openIndex, setOpenIndex] = useState(null);
+  const faqs = [
+    {
+      id: "01",
+      q: "How do I register to vote?",
+      a: "Click on the 'Register / Vote' button in the top right corner. You'll need to provide your full name, email, and valid Voter ID. Once registered, your account will be verified by an administrator before you can cast a vote."
+    },
+    {
+      id: "02",
+      q: "Is my vote anonymous?",
+      a: "Yes, absolutely. Our system uses advanced encryption to ensure that your vote is kept confidential. While we verify that you have voted to prevent duplicates, your specific choice is anonymized in the final tally."
+    },
+    {
+      id: "03",
+      q: "How are the results calculated?",
+      a: "Results are calculated in real-time as votes are cast. Our secure backend aggregates the data instantly. However, official results may be held until the election period formally closes, depending on the admin settings."
+    },
+    {
+      id: "04",
+      q: "Can I change my vote?",
+      a: "No. To maintain the integrity of the election process, once a vote is cast and confirmed, it cannot be altered or retracted. Please double-check your selection before submitting."
+    },
+    {
+      id: "05",
+      q: "What if I forget my password?",
+      a: "If you cannot log in, please contact the election administrator or support team via the Contact page. For security reasons, password resets may require additional identity verification."
+    },
+    {
+      id: "06",
+      q: "Is the platform mobile-friendly?",
+      a: "Yes! VoteSecure is optimized for all devices. You can register, view candidates, and vote from your smartphone, tablet, or desktop computer with ease."
+    }
+  ];
 
   return (
     <div className="vs-page">
       <LandingNavbar />
 
-      {/* HERO */}
-      <section className="faq-hero">
+      {/* HERO SECTION */}
+      <section className="vs-hero" style={{ minHeight: 'auto', paddingBottom: '4rem' }}>
         <div className="container">
-          <h1 className="faq-title">
-            Frequently Asked <span>Questions</span>
-          </h1>
-          <p className="faq-subtitle">
-            Answers to common questions about elections, voting, and security.
-          </p>
+          <div style={{ maxWidth: '800px', margin: '0 auto', textAlign: 'center' }}>
+            <div className="vs-badge" style={{ margin: '0 auto 1.5rem', display: 'inline-flex' }}>
+              <span className="dot" />
+              Support
+            </div>
+
+            <h1 className="vs-title">
+              Common <span>Questions</span>
+            </h1>
+
+            <p className="vs-subtitle" style={{ margin: '0 auto' }}>
+              Clear answers to help you navigate the voting process.
+            </p>
+          </div>
         </div>
+        <div className="vs-blob" aria-hidden="true" />
       </section>
 
-      {/* FAQ LIST */}
-      <section className="faq-section">
+      {/* FAQ LIST SECTION - NEW ROW STYLE */}
+      <section className="vs-section" style={{ paddingTop: '0' }}>
         <div className="container">
-          <div className="faq-list">
-            {faqs.map((item, index) => (
-              <div
-                key={index}
-                className={`faq-item ${openIndex === index ? "open" : ""}`}
-              >
-                <button
-                  className="faq-question"
-                  onClick={() =>
-                    setOpenIndex(openIndex === index ? null : index)
-                  }
-                >
-                  <span>{item.q}</span>
-                  <span className="faq-icon">
-                    {openIndex === index ? "−" : "+"}
-                  </span>
-                </button>
 
-                {openIndex === index && (
-                  <div className="faq-answer">
-                    {item.a}
-                  </div>
-                )}
+          <div className="vs-faq-list">
+            {faqs.map((faq, index) => (
+              <div key={index} className="vs-card vs-faq-row vs-animate-in" style={{ animationDelay: `${index * 0.1}s` }}>
+                <div className="vs-faq-number">{faq.id}</div>
+                <div className="vs-faq-content">
+                  <h3 className="h5 mb-2 text-white">{faq.q}</h3>
+                  <p className="vs-text-muted mb-0">{faq.a}</p>
+                </div>
               </div>
             ))}
           </div>
+
+          <div className="mt-5 text-center">
+            <p style={{ color: '#a1a1aa', marginBottom: '1rem' }}>Still have questions?</p>
+            <Link to="/contact" className="vs-btn vs-btn-outline" style={{ color: '#fff' }}>Contact Support</Link>
+          </div>
+
         </div>
       </section>
 
-      {/* FOOTER */}
-      <footer className="vs-footer">
-        <div className="container">
-          <div className="vs-footer-bottom">
-            © {new Date().getFullYear()} VoteSecure — Laravel + React
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

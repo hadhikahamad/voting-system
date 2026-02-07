@@ -1,14 +1,15 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import LandingNavbar from "../components/LandingNavbar";
-import axios from "axios";
+import Footer from '../components/Footer';
 
 export default function Register() {
   const navigate = useNavigate();
 
-  const [form, setForm] = useState({
+  const [formData, setFormData] = useState({
     name: "",
     email: "",
+    voter_id: "",
     password: "",
     password_confirmation: "",
   });
@@ -17,118 +18,155 @@ export default function Register() {
   const [loading, setLoading] = useState(false);
 
   const change = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const submit = async (e) => {
     e.preventDefault();
     setMsg("");
+    setLoading(true);
 
     try {
-      setLoading(true);
+      const formDataObj = new FormData();
+      formDataObj.append('name', formData.name);
+      formDataObj.append('email', formData.email);
+      formDataObj.append('voter_id', formData.voter_id);
+      formDataObj.append('password', formData.password);
+      formDataObj.append('password_confirmation', formData.password_confirmation);
 
-      // ✅ register new voter user
-      await axios.post("/register", form);
+      const response = await fetch('/api/register', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+        },
+        body: formDataObj,
+      });
 
-      setMsg("✅ Registration successful! Redirecting to Login...");
-      setTimeout(() => navigate("/login"), 1200);
+      const data = await response.json();
+
+      if (!response.ok) {
+        if (data.errors) {
+          const firstError = Object.values(data.errors)[0][0];
+          throw new Error(firstError);
+        }
+        throw new Error(data.message || 'Registration failed');
+      }
+
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('user', JSON.stringify(data.user));
+
+      setMsg("✅ Registration successful! Redirecting...");
+      setTimeout(() => navigate("/voter"), 1200);
+
     } catch (err) {
-      setMsg(err.response?.data?.message || "❌ Registration failed");
+      setMsg(err.message || "❌ Registration failed");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div>
+    <div className="vs-page">
       <LandingNavbar />
 
-      <div className="auth-bg py-5">
-        <div className="container py-4">
-          <div className="row justify-content-center">
-            <div className="col-md-6">
-              <div className="card shadow-lg border-0 rounded-4 p-4">
-                <h3 className="fw-bold mb-2 text-center">Register as Voter</h3>
-                <p className="text-muted text-center">
-                  Create your voter account to vote in elections.
-                </p>
+      <div className="vs-auth-wrapper">
+        <div className="vs-auth-card vs-fade-in">
+          <div className="vs-auth-head">
+            <h3>Register as Voter</h3>
+            <p>Create your voter account to vote in elections.</p>
+          </div>
 
-                {msg && <div className="alert alert-info">{msg}</div>}
-
-                <form onSubmit={submit}>
-                  <div className="mb-3">
-                    <label className="form-label fw-semibold">Full Name</label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      name="name"
-                      value={form.name}
-                      onChange={change}
-                      required
-                    />
-                  </div>
-
-                  <div className="mb-3">
-                    <label className="form-label fw-semibold">Email</label>
-                    <input
-                      type="email"
-                      className="form-control"
-                      name="email"
-                      value={form.email}
-                      onChange={change}
-                      required
-                    />
-                  </div>
-
-                  <div className="mb-3">
-                    <label className="form-label fw-semibold">Password</label>
-                    <input
-                      type="password"
-                      className="form-control"
-                      name="password"
-                      value={form.password}
-                      onChange={change}
-                      required
-                    />
-                  </div>
-
-                  <div className="mb-3">
-                    <label className="form-label fw-semibold">
-                      Confirm Password
-                    </label>
-                    <input
-                      type="password"
-                      className="form-control"
-                      name="password_confirmation"
-                      value={form.password_confirmation}
-                      onChange={change}
-                      required
-                    />
-                  </div>
-
-                  <button
-                    className="btn btn-primary w-100 py-2 fw-bold rounded-3"
-                    disabled={loading}
-                  >
-                    {loading ? "Creating..." : "Create Account"}
-                  </button>
-
-                  <p className="text-center mt-3 mb-0">
-                    Already have an account?{" "}
-                    <Link to="/login" className="fw-bold text-decoration-none">
-                      Login
-                    </Link>
-                  </p>
-                </form>
-              </div>
-
-              <div className="text-center text-muted small mt-3">
-                © {new Date().getFullYear()} Voting System
-              </div>
+          {msg && (
+            <div className={`vs-alert ${msg.includes('✅') ? 'vs-alert-success' : 'vs-alert-danger'}`}>
+              {msg}
             </div>
+          )}
+
+          <form onSubmit={submit} className="vs-auth-form" autoComplete="off">
+            <div className="vs-input-group">
+              <label className="vs-label">Full Name</label>
+              <input
+                type="text"
+                className="vs-input"
+                name="name"
+                value={formData.name}
+                onChange={change}
+                placeholder="Enter your full name"
+                required
+              />
+            </div>
+
+            <div className="vs-input-group">
+              <label className="vs-label">Voter ID Number</label>
+              <input
+                type="text"
+                className="vs-input"
+                name="voter_id"
+                value={formData.voter_id}
+                onChange={change}
+                placeholder="e.g. ABC1234567"
+                required
+              />
+              <small className="vs-text-muted mt-1 d-block" style={{ fontSize: '0.75rem', opacity: 0.6 }}>
+                Used for identity verification.
+              </small>
+            </div>
+
+            <div className="vs-input-group">
+              <label className="vs-label">Email Address</label>
+              <input
+                type="email"
+                className="vs-input"
+                name="email"
+                value={formData.email}
+                onChange={change}
+                placeholder="your.email@example.com"
+                required
+              />
+            </div>
+
+            <div className="vs-input-group">
+              <label className="vs-label">Password</label>
+              <input
+                type="password"
+                className="vs-input"
+                name="password"
+                value={formData.password}
+                onChange={change}
+                placeholder="••••••••"
+                required
+              />
+            </div>
+
+            <div className="vs-input-group">
+              <label className="vs-label">Confirm Password</label>
+              <input
+                type="password"
+                className="vs-input"
+                name="password_confirmation"
+                value={formData.password_confirmation}
+                onChange={change}
+                placeholder="••••••••"
+                required
+              />
+            </div>
+
+            <button
+              className="vs-btn vs-btn-primary vs-w-full mt-2"
+              disabled={loading}
+              style={{ padding: '14px' }}
+            >
+              {loading ? "Creating account..." : "Create Free Account"}
+            </button>
+          </form>
+
+          <div className="vs-auth-footer">
+            Already have an account? <Link to="/login">Login here</Link>
           </div>
         </div>
       </div>
+
+      <Footer />
     </div>
   );
 }

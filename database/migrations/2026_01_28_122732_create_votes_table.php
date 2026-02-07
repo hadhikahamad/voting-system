@@ -6,26 +6,21 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('votes', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('voter_id')->constrained('users');
             $table->foreignId('election_id')->constrained()->onDelete('cascade');
             $table->foreignId('candidate_id')->constrained()->onDelete('cascade');
-            $table->string('voter_id');
+            $table->timestamp('voted_at')->useCurrent();
             $table->timestamps();
 
-            $table->unique(['election_id', 'voter_id']);
+            // One voter can vote only once per election
+            $table->unique(['voter_id', 'election_id']);
         });
-
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('votes');
