@@ -35,6 +35,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/admin/elections/{election}/toggle', [AdminController::class, 'toggleStatus']);
     Route::post('/admin/elections/{election}/candidates', [AdminController::class, 'addCandidate']);
     Route::delete('/admin/candidates/{candidate}', [AdminController::class, 'deleteCandidate']);
+    Route::post('/admin/elections/{election}/finalize', [\App\Http\Controllers\Api\VoteController::class, 'finalizeResults']);
     
     // Messages management
     Route::get('/admin/messages', [\App\Http\Controllers\Api\MessageController::class, 'index']);

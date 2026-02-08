@@ -18,7 +18,7 @@ class AuthController extends Controller
             'email' => 'required|string|email|max:255|unique:users',
             'voter_id' => 'required|string|max:50|unique:users',
             'password' => 'required|string|min:8|confirmed',
-            'photo' => 'nullable|file|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'photo' => 'nullable|file|mimes:jpeg,png,jpg,gif,avif|max:2048',
         ]);
 
         if ($validator->fails()) {
@@ -88,3 +88,11 @@ class AuthController extends Controller
         return response()->json($request->user());
     }
 }
+
+
+
+
+
+
+
+

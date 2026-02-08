@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import LandingNavbar from '../components/LandingNavbar';
 import ModernDatePicker from '../components/ModernDatePicker';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import '../../css/admin-modal.css'; // Custom styles for modal
 
 import logo from '../images/VoteSecure.png';// Icons (Modern FontAwesome)
 const IconDashboard = () => <i className="fa-solid fa-chart-line"></i>;
@@ -159,6 +161,36 @@ const AdminPanel = () => {
         } catch (err) {
             if (!silent) showToast('Error loading results', 'error');
         }
+    };
+
+    const handleFinalizeResults = async (electionId) => {
+        triggerConfirm(
+            "Finalize Results",
+            "Are you sure you want to finalize these results? This will record the current counts into the persistent database table.",
+            async () => {
+                const token = localStorage.getItem('token');
+                try {
+                    const res = await fetch(`/api/admin/elections/${electionId}/finalize`, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                    const data = await res.json();
+                    if (res.ok) {
+                        showToast(data.message, 'success');
+                        fetchResults(electionId, true);
+                    } else {
+                        showToast(data.message || 'Failed to finalize results', 'error');
+                    }
+                } catch (err) {
+                    showToast('Network error: ' + err.message, 'error');
+                }
+            },
+            'primary'
+        );
     };
 
     // Live Results Polling
@@ -472,8 +504,8 @@ const AdminPanel = () => {
                                                     </td>
                                                     <td>
                                                         <small>
-                                                            Start: {new Date(election.start_date).toLocaleDateString()}<br />
-                                                            End: {new Date(election.end_date).toLocaleDateString()}
+                                                            Start: {new Date(election.start_date).toLocaleString()}<br />
+                                                            End: {new Date(election.end_date).toLocaleString()}
                                                         </small>
                                                     </td>
                                                     <td>
@@ -588,7 +620,85 @@ const AdminPanel = () => {
                                             <h3 className="m-0" style={{ color: '#30d5c8' }}>Real-time Analytics</h3>
                                             <p className="vs-text-muted small">Election Results Detail View</p>
                                         </div>
-                                        <button className="vs-btn vs-btn-xs vs-btn-danger" onClick={() => setViewingResults(null)}>Close Results</button>
+                                        <div className="vs-flex-gap">
+                                            <button className="vs-btn vs-btn-xs vs-btn-primary" onClick={() => handleFinalizeResults(viewingResults)}>Finalize Results</button>
+                                            <button className="vs-btn vs-btn-xs vs-btn-danger" onClick={() => setViewingResults(null)}>Close Results</button>
+                                        </div>
+                                    </div>
+
+                                    {/* CHARTS SECTION */}
+                                    <div className="vs-grid-2 mb-4" style={{ gap: '20px' }}>
+                                        {/* TURN OUT CHART */}
+                                        <div className="vs-card" style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)' }}>
+                                            <h4 className="h6 mb-3" style={{ color: '#a1a1aa' }}>Voter Turnout</h4>
+                                            <div style={{ height: '250px' }}>
+                                                <ResponsiveContainer width="100%" height="100%">
+                                                    <PieChart>
+                                                        <Pie
+                                                            data={[
+                                                                { name: 'Voted', value: resultsData.total_votes },
+                                                                { name: 'Did Not Vote', value: (resultsData.total_eligible_voters || 0) - resultsData.total_votes }
+                                                            ]}
+                                                            cx="50%"
+                                                            cy="50%"
+                                                            innerRadius={60}
+                                                            outerRadius={80}
+                                                            paddingAngle={5}
+                                                            dataKey="value"
+                                                        >
+                                                            <Cell key="cell-0" fill="#30d5c8" />
+                                                            <Cell key="cell-1" fill="rgba(255,255,255,0.1)" />
+                                                        </Pie>
+                                                        <RechartsTooltip
+                                                            contentStyle={{ background: '#0f172a', border: '1px solid #1e293b', borderRadius: '8px' }}
+                                                            itemStyle={{ color: '#e2e8f0' }}
+                                                        />
+                                                        <Legend verticalAlign="bottom" height={36} />
+                                                    </PieChart>
+                                                </ResponsiveContainer>
+                                            </div>
+                                            <div className="text-center mt-2">
+                                                <strong style={{ fontSize: '1.2rem', color: '#e2e8f0' }}>
+                                                    {resultsData.total_eligible_voters > 0 ? Math.round((resultsData.total_votes / resultsData.total_eligible_voters) * 100) : 0}%
+                                                </strong>
+                                                <div className="small vs-text-muted">Participation Rate</div>
+                                            </div>
+                                        </div>
+
+                                        {/* RESULTS BAR CHART */}
+                                        <div className="vs-card" style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)' }}>
+                                            <h4 className="h6 mb-3" style={{ color: '#a1a1aa' }}>Vote Distribution</h4>
+                                            <div style={{ height: '250px' }}>
+                                                <ResponsiveContainer width="100%" height="100%">
+                                                    <BarChart data={resultsData.results}>
+                                                        <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+                                                        <XAxis
+                                                            dataKey="candidate.name"
+                                                            stroke="#94a3b8"
+                                                            fontSize={12}
+                                                            tickLine={false}
+                                                            axisLine={false}
+                                                        />
+                                                        <YAxis
+                                                            stroke="#94a3b8"
+                                                            fontSize={12}
+                                                            tickLine={false}
+                                                            axisLine={false}
+                                                        />
+                                                        <RechartsTooltip
+                                                            cursor={{ fill: 'rgba(255,255,255,0.05)' }}
+                                                            contentStyle={{ background: '#0f172a', border: '1px solid #1e293b', borderRadius: '8px' }}
+                                                            itemStyle={{ color: '#30d5c8' }}
+                                                        />
+                                                        <Bar dataKey="votes" fill="#6d5cff" radius={[4, 4, 0, 0]}>
+                                                            {resultsData.results.map((entry, index) => (
+                                                                <Cell key={`cell-${index}`} fill={index === 0 ? '#30d5c8' : '#6d5cff'} />
+                                                            ))}
+                                                        </Bar>
+                                                    </BarChart>
+                                                </ResponsiveContainer>
+                                            </div>
+                                        </div>
                                     </div>
                                     <div className="vs-grid-2" style={{ gap: '30px' }}>
                                         <div className="vs-flex-column" style={{ gap: '20px' }}>
@@ -715,7 +825,7 @@ const AdminPanel = () => {
                                                             type="file"
                                                             className="vs-input small"
                                                             onChange={e => setNewCandidate({ ...newCandidate, logo_file: e.target.files[0] })}
-                                                            accept="image/*"
+                                                            accept="image/jpeg,image/png,image/gif,image/avif"
                                                         />
                                                     </div>
                                                 </div>
@@ -826,7 +936,7 @@ const AdminPanel = () => {
                                                         <div>
                                                             <div style={{ fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px' }}>
                                                                 {user.name}
-                                                                {user.is_verified && <span title="Verified" style={{ color: '#30d5c8', fontSize: '0.9rem' }}>✓</span>}
+                                                                {!!user.is_verified && <span title="Verified" style={{ color: '#30d5c8', fontSize: '0.9rem' }}>✓</span>}
                                                             </div>
                                                             <small className="vs-text-muted">{user.email}</small>
                                                         </div>

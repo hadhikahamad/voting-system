@@ -37,4 +37,20 @@ class Election extends Model
     {
         return $this->belongsTo(User::class, 'created_by');
     }
+
+    public function totalVotes()
+    {
+        return $this->hasMany(Vote::class)->count();
+    }
+
+    public function isActive()
+    {
+        return $this->status === 'active' && 
+               now()->between($this->start_date, $this->end_date);
+    }
+
+    public function isClosed()
+    {
+        return $this->status === 'closed' || now()->greaterThan($this->end_date);
+    }
 }

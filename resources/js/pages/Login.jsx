@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import LandingNavbar from "../components/LandingNavbar";
 import Footer from "../components/Footer";
-import axios from "axios";
+import AuthSlideshow from "../components/AuthSlideshow";
 
 export default function Login() {
     const navigate = useNavigate();
@@ -58,55 +58,93 @@ export default function Login() {
         <div className="vs-page">
             <LandingNavbar />
 
-            <div className="vs-main vs-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '40px 0' }}>
-                <div style={{ maxWidth: '400px', width: '100%' }}>
-                    <div className="vs-card">
-                        <div className="vs-text-center mb-4">
-                            <h2>Welcome Back</h2>
-                            <p className="vs-text-muted">Login to continue to VoteSecure</p>
+            <div className="vs-auth-container" style={{ display: 'flex', minHeight: 'calc(100vh - 80px)', backgroundColor: '#0f172a' }}>
+                {/* Left Side - Slideshow */}
+                <div className="vs-auth-image" style={{ flex: '1', display: 'none', position: 'relative', overflow: 'hidden' }}>
+                    <AuthSlideshow />
+
+                    {/* CSS media query to show on desktop only - inline style used for simplicity, assume md breakpoint ~768px */}
+                    <style>{`
+                       @media (min-width: 900px) {
+                           .vs-auth-image { display: block !important; }
+                       }
+                   `}</style>
+                </div>
+
+                {/* Vertical Divider */}
+                <div className="vs-auth-divider">
+                    <div className="vs-divider-line"></div>
+                    <div className="vs-divider-line"></div>
+                </div>
+
+                {/* Right Side - Form */}
+                <div className="vs-auth-form-container vs-animate-gradient" style={{ flex: '1', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px', background: 'linear-gradient(-45deg, #0f172a, #1e293b, #0f172a, #172554)' }}>
+                    <div className="vs-card vs-glass-card-hover" style={{ maxWidth: '450px', width: '100%', padding: '40px', borderRadius: '24px', backdropFilter: 'blur(10px)', backgroundColor: 'rgba(30, 41, 59, 0.6)', border: '1px solid rgba(255, 255, 255, 0.1)', transition: 'all 0.4s ease' }}>
+
+                        <div className="text-center mb-5 vs-animate-slide-up">
+                            <h2 style={{ fontSize: '2rem', fontWeight: '800', background: 'linear-gradient(135deg, #fff 0%, #94a3b8 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', marginBottom: '10px' }}>Welcome Back</h2>
+                            <p className="vs-text-muted">Enter your credentials to access your account.</p>
                         </div>
 
                         {msg && (
-                            <div className={`vs-badge mb-3 ${msg.includes('success') ? 'vs-badge-success' : 'vs-badge-danger'}`} style={{ display: 'flex', width: '100%', padding: '10px' }}>
+                            <div className={`vs-alert mb-4 ${msg.includes('Login failed') ? 'vs-alert-danger' : 'vs-alert-success'}`} style={{ borderRadius: '12px', padding: '12px 16px', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                <i className={`fa-solid ${msg.includes('Login failed') ? 'fa-circle-exclamation' : 'fa-circle-check'}`}></i>
                                 {msg}
                             </div>
                         )}
 
                         <form onSubmit={submit}>
-                            <div className="vs-input-group">
-                                <label className="vs-label">Email Address</label>
-                                <input
-                                    type="email"
-                                    className="vs-input"
-                                    name="email"
-                                    value={form.email}
-                                    onChange={change}
-                                    required
-                                />
+                            <div className="vs-input-group mb-4 vs-animate-slide-up vs-delay-100">
+                                <label className="vs-label" style={{ marginBottom: '8px', fontSize: '0.9rem', fontWeight: '600', color: '#cbd5e1' }}>Email Address</label>
+                                <div style={{ position: 'relative' }}>
+                                    <i className="fa-solid fa-envelope" style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: '#64748b' }}></i>
+                                    <input
+                                        type="email"
+                                        className="vs-input"
+                                        name="email"
+                                        value={form.email}
+                                        onChange={change}
+                                        placeholder="name@example.com"
+                                        required
+                                        style={{ paddingLeft: '45px', backgroundColor: 'rgba(15, 23, 42, 0.6)', borderColor: 'rgba(51, 65, 85, 0.5)' }}
+                                    />
+                                </div>
                             </div>
 
-                            <div className="vs-input-group">
-                                <label className="vs-label">Password</label>
-                                <input
-                                    type="password"
-                                    className="vs-input"
-                                    name="password"
-                                    value={form.password}
-                                    onChange={change}
-                                    required
-                                />
+                            <div className="vs-input-group mb-5 vs-animate-slide-up vs-delay-200">
+                                <label className="vs-label" style={{ marginBottom: '8px', fontSize: '0.9rem', fontWeight: '600', color: '#cbd5e1' }}>Password</label>
+                                <div style={{ position: 'relative' }}>
+                                    <i className="fa-solid fa-lock" style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: '#64748b' }}></i>
+                                    <input
+                                        type="password"
+                                        className="vs-input"
+                                        name="password"
+                                        value={form.password}
+                                        onChange={change}
+                                        placeholder="••••••••"
+                                        required
+                                        style={{ paddingLeft: '45px', backgroundColor: 'rgba(15, 23, 42, 0.6)', borderColor: 'rgba(51, 65, 85, 0.5)' }}
+                                    />
+                                </div>
                             </div>
 
                             <button
                                 type="submit"
-                                className="vs-btn vs-btn-primary vs-w-full mb-4"
+                                className="vs-btn vs-btn-primary vs-w-full vs-animate-slide-up vs-delay-300"
                                 disabled={loading}
+                                style={{ padding: '14px', fontSize: '1rem', fontWeight: '600', letterSpacing: '0.5px' }}
                             >
-                                {loading ? "Logging in..." : "Login"}
+                                {loading ? (
+                                    <span><i className="fa-solid fa-circle-notch fa-spin me-2"></i> Logging in...</span>
+                                ) : (
+                                    "Sign In"
+                                )}
                             </button>
 
-                            <div className="vs-auth-footer">
-                                Don't have an account? <Link to="/register">Register here</Link>
+                            <div className="vs-auth-footer mt-4 text-center vs-animate-slide-up vs-delay-300">
+                                <p style={{ color: '#94a3b8' }}>
+                                    Don't have an account? <Link to="/register" style={{ color: '#3b82f6', fontWeight: '600', textDecoration: 'none' }}>Create Account</Link>
+                                </p>
                             </div>
                         </form>
                     </div>

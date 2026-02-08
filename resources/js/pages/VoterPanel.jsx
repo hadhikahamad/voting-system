@@ -119,6 +119,14 @@ const VoterPanel = () => {
           const start = new Date(el.start_date);
           const end = new Date(el.end_date);
 
+          // Fix: Only extend end time if it is explicitly set to midnight (00:00:00)
+          // This handles cases where only a date was provided (defaulting to midnight).
+          // If a specific time (e.g., 17:00) was set, we respect it.
+          if ((end.getHours() === 0 && end.getMinutes() === 0) || (end.getUTCHours() === 0 && end.getUTCMinutes() === 0)) {
+            end.setHours(23, 59, 59, 999);
+            el.end_date = end.toISOString();
+          }
+
           if (el.status === 'closed' || now > end) {
             closed.push(el);
           } else if (el.status === 'active' && now >= start && now <= end) {
@@ -251,7 +259,7 @@ const VoterPanel = () => {
             <div>
               <h2 className="vs-title">
                 Voter <span>Panel</span>
-                {currentUser?.is_verified && (
+                {!!currentUser?.is_verified && (
                   <span className="vs-badge vs-badge-success" style={{ marginLeft: '15px', fontSize: '0.7rem', verticalAlign: 'middle', textTransform: 'uppercase', letterSpacing: '1px' }}>
                     <span style={{ marginRight: '5px' }}>✓</span> Verified Voter
                   </span>
@@ -296,18 +304,26 @@ const VoterPanel = () => {
               )}
 
               {/* ACTIVE ELECTIONS */}
+              {/* ACTIVE ELECTIONS */}
               <div className="mb-5">
                 <div className="vs-flex-between mb-3">
                   <h4 style={{ fontWeight: 800, margin: 0 }}>Active Elections</h4>
-                  <span className="vs-badge">{activeElections.length} Running</span>
+                  {!!currentUser?.is_verified && <span className="vs-badge">{activeElections.length} Running</span>}
                 </div>
-                <div className="vs-grid-4">
-                  {activeElections.length === 0 ? (
-                    <div className="vs-card vs-w-full vs-text-center py-5" style={{ gridColumn: '1 / -1' }}>
-                      <p className="vs-text-muted">No ongoing elections at the moment. Check "Upcoming" or "Completed".</p>
-                    </div>
-                  ) : (
-                    activeElections.map(election => (
+
+                {!currentUser?.is_verified ? (
+                  <div className="vs-card vs-w-full vs-text-center py-5" style={{ background: 'rgba(30, 41, 59, 0.5)', border: '1px dashed rgba(255,255,255,0.1)' }}>
+                    <div style={{ fontSize: '2rem', marginBottom: '10px' }}>🔒</div>
+                    <h4 style={{ color: '#94a3b8' }}>Access Restricted</h4>
+                    <p className="vs-text-muted">You must be a <strong>Verified Voter</strong> to view and participate in active elections.</p>
+                  </div>
+                ) : (
+                  <div className="vs-grid-4">
+                    {activeElections.length === 0 ? (
+                      <div className="vs-card vs-w-full vs-text-center py-5" style={{ gridColumn: '1 / -1' }}>
+                        <p className="vs-text-muted">No ongoing elections at the moment. Check "Upcoming" or "Completed".</p>
+                      </div>
+                    ) : (activeElections.map(election => (
                       <div key={election.id} className="vs-stat-card vs-flex-column align-items-start" style={{ gap: '10px' }}>
                         <div className="vs-badge vs-badge-success" style={{ marginBottom: '5px' }}>
                           <div className="dot"></div> Active Now
@@ -330,8 +346,9 @@ const VoterPanel = () => {
                         </button>
                       </div>
                     ))
-                  )}
-                </div>
+                    )}
+                  </div>
+                )}
               </div>
 
               {/* UPCOMING ELECTIONS */}
@@ -378,12 +395,19 @@ const VoterPanel = () => {
                           Closed
                         </div>
                         <h3 style={{ margin: 0, fontWeight: 800 }}>{election.title}</h3>
-                        <button
-                          className="vs-btn vs-btn-success vs-w-full"
-                          onClick={() => fetchResults(election)}
-                        >
-                          View Results
-                        </button>
+
+                        {!currentUser?.is_verified ? (
+                          <button className="vs-btn vs-btn-ghost vs-w-full" disabled style={{ opacity: 0.5, cursor: 'not-allowed' }}>
+                            🔒 Results Locked
+                          </button>
+                        ) : (
+                          <button
+                            className="vs-btn vs-btn-success vs-w-full"
+                            onClick={() => fetchResults(election)}
+                          >
+                            View Results
+                          </button>
+                        )}
                       </div>
                     ))
                   )}
@@ -501,7 +525,7 @@ const VoterPanel = () => {
                       <div style={{ height: '220px', overflow: 'hidden', position: 'relative' }}>
                         <img
                           src={candidate.photo ? `/storage/${candidate.photo}` : 'https://cdn-icons-png.flaticon.com/512/149/149071.png'}
-                          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                          style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top' }}
                           alt={candidate.name}
                         />
                         <div style={{ position: 'absolute', bottom: '15px', left: '15px', right: '15px' }}>

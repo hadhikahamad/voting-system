@@ -122,8 +122,8 @@ class AdminController extends Controller
             'name' => 'required|string|max:255',
             'party' => 'nullable|string|max:255',
             'bio' => 'nullable|string',
-            'photo' => 'nullable|file|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'party_logo' => 'nullable|file|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'photo' => 'nullable|file|mimes:jpeg,png,jpg,gif,avif|max:2048',
+            'party_logo' => 'nullable|file|mimes:jpeg,png,jpg,gif,avif|max:2048',
         ]);
 
         if ($request->hasFile('photo')) {
@@ -184,7 +184,7 @@ class AdminController extends Controller
         }
 
         // Delete associated votes
-        \App\Models\Vote::where('user_id', $user->id)->delete();
+        \App\Models\Vote::where('voter_id', $user->id)->delete();
         $user->delete();
 
         return response()->json(['message' => 'User deleted successfully']);

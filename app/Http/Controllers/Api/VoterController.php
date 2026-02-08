@@ -31,7 +31,15 @@ class VoterController extends Controller
 
         // 2. Check dates
         $now = now();
-        if ($now < $election->start_date || $now > $election->end_date) {
+        $endDate = $election->end_date;
+
+        // Fix: If start and end are on same day OR end is midnight, assume end of day
+        // Fix: If end is midnight (00:00:00), assume end of day. Otherwise respect specific time.
+        if ($endDate->format('H:i:s') === '00:00:00') {
+             $endDate = $endDate->endOfDay();
+        }
+
+        if ($now < $election->start_date || $now > $endDate) {
             return response()->json(['message' => 'Voting is not open for this election.'], 422);
         }
 

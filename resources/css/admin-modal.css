@@ -1,0 +1,149 @@
+/* Admin Modal Enhancements */
+
+/* Modal Content Visibility */
+.vs-modal {
+    background: #1e293b !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    box-shadow: 0 25px 60px -12px rgba(0, 0, 0, 0.6) !important;
+}
+
+.vs-modal h3 {
+    color: #fff !important;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.vs-modal p {
+    color: #e2e8f0 !important;
+    font-size: 1.05rem;
+}
+
+/* Cancel Button - High Visibility Outline */
+.vs-btn-outline {
+    background: transparent !important;
+    border: 2px solid rgba(255, 255, 255, 0.3) !important;
+    color: #fff !important;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 700 !important;
+}
+
+.vs-btn-outline:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border-color: #fff !important;
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+}
+
+/* Delete/Danger Button - High Visibility Red */
+.vs-btn-danger {
+    background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%) !important;
+    color: #fff !important;
+    border: none !important;
+    box-shadow: 0 4px 15px rgba(220, 38, 38, 0.4) !important;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 800 !important;
+}
+
+.vs-btn-danger:hover {
+    background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(220, 38, 38, 0.5) !important;
+}
+
+/* Ensure buttons are large enough */
+.vs-modal-actions button {
+    padding: 12px 24px !important;
+    font-size: 1rem !important;
+}
+
+/* Button Layout Alignment */
+.vs-modal-actions {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 20px !important;
+    margin-top: 25px !important;
+    width: 100% !important;
+}
+
+/* User Management Table Alignment */
+/* User Management Table Alignment */
+.vs-table th,
+.vs-table td {
+    vertical-align: middle !important;
+    padding-top: 14px !important;
+    padding-bottom: 14px !important;
+}
+
+/* Center align all columns except the first one (User info) */
+.vs-table th:not(:first-child),
+.vs-table td:not(:first-child) {
+    text-align: center !important;
+}
+
+/* Ensure flex containers in cells (like Actions) are centered */
+.vs-table td:not(:first-child) .vs-flex-gap,
+.vs-table td:not(:first-child) .vs-flex-gap>div {
+    justify-content: center !important;
+}
+
+.vs-table .vs-flex-gap {
+    align-items: center !important;
+    gap: 10px !important;
+}
+
+/* Strict Vertical Alignment for Table Pills */
+.vs-table td code,
+.vs-table td .vs-badge,
+.vs-table td .vs-btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    vertical-align: middle !important;
+    margin: 0 !important;
+    /* Optional: Enforce consistent height for perfect pill alignment */
+    min-height: 30px !important;
+}
+
+/* Fix specific alignment for the code element (Voter ID) */
+.vs-table td code {
+    font-size: 0.9rem !important;
+}
+
+/* Modern File Input Styling */
+.vs-input[type="file"] {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px dashed rgba(255, 255, 255, 0.2) !important;
+    padding: 8px !important;
+    height: auto !important;
+    min-height: 50px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    border-radius: 8px !important;
+}
+
+.vs-input[type="file"]:hover {
+    background: rgba(255, 255, 255, 0.08) !important;
+    border-color: rgba(59, 130, 246, 0.5) !important;
+}
+
+.vs-input[type="file"]::file-selector-button {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
+    color: white !important;
+    padding: 6px 16px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-right: 15px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
+    transition: all 0.3s ease;
+}
+
+.vs-input[type="file"]::file-selector-button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 15px rgba(37, 99, 235, 0.4);
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
+}
